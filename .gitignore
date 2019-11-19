@@ -1,0 +1,5 @@
+# secrets
+hidden/setup.json
+
+# dependencies
+/node_modules

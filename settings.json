@@ -1,0 +1,9 @@
+{
+"enabled": true,
+"subMode": false,
+"chatInterval": 300,
+"chatNumber": 1,
+"pointBonus": 1,
+"ignoredUsers": ["username1", "username2", "username3"],
+"tellChat": true
+}
