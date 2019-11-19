@@ -32,7 +32,7 @@ client.connect().then(function(data) { // Connect to Twitch
 client.on('connected', (addr, port) => {
   console.log(`* Connected to ${addr}:${port}`);
 });
-let timer = {_destroyed: true}; //Set-up: Set timer to 'called' (empty)
+let timerRunning = false; //Set-up: false
 let chattingUsers = []; //Set-up: []
 let lastUser = ''; //Set-up: ''
 
@@ -54,13 +54,15 @@ client.on('message', (room, user, msg, self) => {
   chattingUsers.push(user.username); //Add user to list of chatters
 
 
-  if(timer._destroyed === false) return; //If timer is running, return.
+  if(timerRunning) return; //If timer is running, return.
+  timerRunning = true;
   timer = setTimeout(() => updatePoints(chattingUsers,room), settings.chatInterval*1000 ); //Restart Timer when ended. Set time in Settings, SECONDS
 });
 
 
 function updatePoints(users,room){
   chattingUsers = [] //reset chatters
+  timerRunning = false; //reset timer varible
   if(!users[0]) return //Prevent Emptyset errors.
   //message testing
   let rateTesting = users.length //VAILD MESSAGE COUNT
