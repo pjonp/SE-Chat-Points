@@ -1,9 +1,50 @@
 {
-"enabled": true,
-"subMode": false,
-"chatInterval": 300,
-"chatNumber": 1,
-"pointBonus": 1,
-"ignoredUsers": ["username1", "username2", "username3"],
-"tellChat": false
+  "chatCommand": [
+    "!sechatpoints",
+    "changecommand"
+  ],
+  "enabled": [
+    true,
+    "enabled"
+  ],
+  "subMode": [
+    false,
+    "subs"
+  ],
+  "chatInterval": [
+    300,
+    "time"
+  ],
+  "chatNumber": [
+    2,
+    "chats"
+  ],
+  "pointBonus": [
+    3,
+    "bonus"
+  ],
+  "ignoredUsers": [
+    [
+      "username1",
+      "username2_MUST HAVE AT LEAST 2"
+    ],
+    [
+      "ignoreadd",
+      "ignoreremove"
+    ]
+  ],
+  "editors": [
+    [
+      "user1",
+      "user2_MUST HAVE AT LEAST 2"
+    ],
+    [
+      "editoradd",
+      "editorremove"
+    ]
+  ],
+  "tellChat": [
+    false,
+    "announce"
+  ]
 }

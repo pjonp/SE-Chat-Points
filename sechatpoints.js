@@ -1,7 +1,9 @@
 const tmi = require('tmi.js'); //Twitch chat plugin
 const setup = require('./hidden/setup'); //setup information
-const settings = require('./settings'); //settings information
 const fetch = require('node-fetch'); //Webcall
+const fs = require('fs'); //File System
+const updateSettings = require('./updateSettings.js');
+let settings = updateSettings.settings; //settings information
 
 //Twitch Login Settings
 const options = {
@@ -17,14 +19,19 @@ const client = new tmi.client(options); // Create a Twitch Client
 
 client.connect().then(function(data) { // Connect to Twitch
     console.log('SE Chat Point Bot Online');
-    console.log(`Edit settings in settings.json file
-      "enabled": ${settings.enabled},
-      "subMode": ${settings.subMode}, //Only add to subs
-      "chatInterval": ${settings.chatInterval}, //Chat timeframe in Seconds (30 second minimum)
-      "chatNumber": ${settings.chatNumber}, //Number of nonconsecutive messages in timeframe
-      "pointBonus": ${settings.pointBonus}, //Amount to points to add after timeframe
-      "ignoredUsers": [${settings.ignoredUsers}], //Ignored Users Example
-      "tellChat": ${settings.tellChat} //Announce most active person to chat
+    console.log(`
+      ********${settings.chatCommand[0]}**********
+      ${settings.chatCommand[1]} //Change main command
+      ${settings.enabled[1]} : ${settings.enabled[0]} //true/false
+      ${settings.subMode[1]} : ${settings.subMode[0]} //Only add to subs
+      ${settings.chatInterval[1]} : ${settings.chatInterval[0]} //Chat timeframe in Seconds (30 second minimum)
+      ${settings.chatNumber[1]} : ${settings.chatNumber[0]} //Number of nonconsecutive messages in timeframe
+      ${settings.pointBonus[1]} : ${settings.pointBonus[0]} //Amount to points to add after timeframe
+      ${settings.ignoredUsers[1]} : [${settings.ignoredUsers[0]}] //Ignored Users Example
+      ${settings.editors[1]} : [${settings.editors[0]}] //Users that are allowed to change settings via chat commands
+      ${settings.tellChat[1]} : ${settings.tellChat[0]} //Announce most active person to chat
+
+      Edit settings in settings.json file
       `)
 }).catch(function(err) {
     console.log('Twitch Connect Error');
@@ -36,29 +43,21 @@ let timerRunning = false; //Set-up: false
 let chattingUsers = []; //Set-up: []
 let lastUser = ''; //Set-up: ''
 
-
 client.on('message', (room, user, msg, self) => {
-  if(self || !settings.enabled) return;  //Ignore messages from the bot & check if points are enabled.
-  if(user['message-type'] === 'whisper') return; //Ingore Whispers to bot
-//HARD CODE ROOM CHECK ... prevents drift (i.e. self-hosting follows a raid to new channel)
-  if(room != setup.CHANNEL_NAME[0]) return;
+  if(self || user['message-type'] === 'whisper' || room != setup.CHANNEL_NAME[0] ) return;  //Ignore messages from the bot, whisps, and other rooms
 // --------------
-
-  if(settings.ignoredUsers.some(i=> i === user.username.toLowerCase())) return; //Ignore names in settings.json, LOWERCASE
-
-  if(lastUser === user.username) return; //consecutive chat check; prevents 1 person spam & restarting timer. Must be 2+ users chatting.
+  if(settings.editors[0].some(i=> i === user.username)) { //If editor check for a command
+    updateSettings.update(client,room,msg);
+  }
+  if(!settings.enabled[0]) return;  //Check if system is enabled.
+  if(settings.ignoredUsers[0].some(i=> i === user.username) || lastUser === user.username) return; //Ignore names in settings.json & consecutive chats
   lastUser = user.username; //update lastUser
-
-  if(settings.subMode && !user.subscriber ) return; //Sub mode check
-
+  if(settings.subMode[0] && !user.subscriber ) return; //Sub mode check
   chattingUsers.push(user.username); //Add user to list of chatters
-
-
   if(timerRunning) return; //If timer is running, return.
   timerRunning = true;
-  timer = setTimeout(() => updatePoints(chattingUsers,room), settings.chatInterval*1000 ); //Restart Timer when ended. Set time in Settings, SECONDS
+  timer = setTimeout(() => updatePoints(chattingUsers,room), settings.chatInterval[0]*1000 ); //Restart Timer when ended. Set time in Settings, SECONDS
 });
-
 
 function updatePoints(users,room){
   chattingUsers = [] //reset chatters
@@ -74,7 +73,7 @@ function updatePoints(users,room){
 //
   users.forEach(i =>{
     let numOfChats = users.lastIndexOf(i) - users.indexOf(i) + 1
-    if(vaildUsers.indexOf(i) === -1 && numOfChats >= settings.chatNumber) { //if isn't already added + compare # of messages to Settings
+    if(vaildUsers.indexOf(i) === -1 && numOfChats >= settings.chatNumber[0]) { //if isn't already added + compare # of messages to Settings
       vaildUsers.push(i) //add user if above is true
 
       //for leader info
@@ -89,14 +88,14 @@ console.log('Adding points to: ', vaildUsers.length, ' users') //testing
 console.log(vaildUsers) //testing
 console.log('most chats: ', leader[0], ' #: ', leader[1])
 //  client.action(room, `NOT Updating Points...${vaildUsers}`).catch(err=>{console.log('Error: ', err)});
-if(settings.tellChat){
-  client.say(room, `Fun Fact: in the last ${settings.chatInterval / 60} minutes of chat, ${leader[0]} had the most non-consecutive messages: ${leader[1]}`).catch(err=>{console.log('Error sending Leader message to chat: ', err)});
+if(settings.tellChat[0]){
+  client.say(room, `Fun Fact: in the last ${settings.chatInterval[0] / 60} minutes of chat, ${leader[0]} had the most non-consecutive messages: ${leader[1]}`).catch(err=>{console.log('Error sending Leader message to chat: ', err)});
 }
 
 let putMe = vaildUsers.map(i => { //format data to SE object
   return {
     "username": i,
-    "current": settings.pointBonus
+    "current": settings.pointBonus[0]
   }
 })
 
