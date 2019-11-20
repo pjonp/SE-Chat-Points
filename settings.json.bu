@@ -1,0 +1,11 @@
+{
+"chatCommand": ["!sechatpoints", "changecommand"],
+"enabled": [true, "enabled"],
+"subMode": [false, "subs"],
+"chatInterval": [300, "time"],
+"chatNumber": [1, "chats"],
+"pointBonus": [1, "bonus"],
+"ignoredUsers": [["username1", "username2", "username3"], ["ignoreadd", "ignoreremove"]],
+"editors": [["pjonp", "charliepryor", "username3"], ["editoradd", "editorremove"]],
+"tellChat": [false, "announce"]
+}
