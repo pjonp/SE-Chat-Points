@@ -7,7 +7,7 @@ let settings = updateSettings.settings; //settings information
 
 //Twitch Login Settings
 const options = {
-  options: { debug: true }, //see info/chat in console. true to enable.
+  options: { debug: false }, //see info/chat in console. true to enable.
   connection: { reconnect: true }, //auto reconnect
   identity: {
     username: setup.BOT_USERNAME,
