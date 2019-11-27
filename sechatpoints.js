@@ -32,6 +32,7 @@ client.connect().then(function(data) { // Connect to Twitch
       ${settings.tellChat[1]} : ${settings.tellChat[0]} //Announce most active person to chat
 
       Edit settings in settings.json file
+      
       `)
 }).catch(function(err) {
     console.log('Twitch Connect Error');
@@ -56,6 +57,7 @@ client.on('message', (room, user, msg, self) => {
   chattingUsers.push(user.username); //Add user to list of chatters
   if(timerRunning) return; //If timer is running, return.
   timerRunning = true;
+  console.log(`***new session started for ${settings.chatInterval[0]} seconds`)
   timer = setTimeout(() => updatePoints(chattingUsers,room), settings.chatInterval[0]*1000 ); //Restart Timer when ended. Set time in Settings, SECONDS
 });
 
