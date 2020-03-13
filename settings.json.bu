@@ -5,7 +5,7 @@
 "chatInterval": [300, "time"],
 "chatNumber": [1, "chats"],
 "pointBonus": [1, "bonus"],
-"ignoredUsers": [["username1", "username2", "username3"], ["ignoreadd", "ignoreremove"]],
-"editors": [["pjonp", "charliepryor", "username3"], ["editoradd", "editorremove"]],
+"ignoredUsers": [["username1", "user2_MUST HAVE AT LEAST 2"], ["ignoreadd", "ignoreremove"]],
+"editors": [["pjonp", "user2_MUST HAVE AT LEAST 2"], ["editoradd", "editorremove"]],
 "tellChat": [false, "announce"]
 }
