@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <script src="http://localhost:3000/socket.io/socket.io.js"></script>
+  <script>
+    var socket = io("http://localhost:3000");
+    // use your socket
+    socket.on("enabledCommand", (message) => {
+      console.log(message)
+    })
+    socket.on("startTimer", (data) => {
+      console.log(data.type, data.gang, data.length)
+      let timerDiv = `<svg>
+        <circle r="18" cx="20" cy="20" style="stroke: ${data.gang}; animation: countdown ${data.length}s linear"></circle>
+      </svg>`
+      document.getElementById(data.gang+data.type).innerHTML = timerDiv
+    })
+  </script>
+  <style>
+    #main {
+      width: 100px;
+      display: flex;
+      flex-wrap: wrap;
+      flex-driection: 'row';
+      align-items: center;
+      justify-content: center;
+    }
+
+    svg {
+      transform: rotateY(-180deg) rotateZ(-90deg);
+      height: 50px;
+      width: 50px;
+    }
+
+    svg circle {
+      stroke-dasharray: 113px;
+      stroke-dashoffset: 0px;
+      stroke-linecap: round;
+      stroke-width: 2px;
+      fill: transparent;
+    }
+
+    @keyframes countdown {
+      from {
+        stroke-dashoffset: 0px;
+      }
+
+      to {
+        stroke-dashoffset: 113px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div id='main'>
+  </div>
+</body>
+<script>
+  let timerArr = [{
+      name: 'redEvent',
+      color: 'red'
+    },
+    {
+      name: 'redSpecial',
+      color: 'red'
+    },
+    {
+      name: 'blueEvent',
+      color: 'blue'
+    },
+    {
+      name: 'blueSpecial',
+      color: 'blue'
+    },
+    {
+      name: 'greenEvent',
+      color: 'green'
+    },
+    {
+      name: 'greenSpecial',
+      color: 'green'
+    }
+  ]
+
+  let timerList = timerArr.map(i => {
+    return (
+      `<div id='${i.name}' class="svgContainer">
+  <svg>
+    <circle r="18" cx="20" cy="20" style="stroke: ${i.color}; animation: countdown 5s linear"></circle>
+  </svg>
+ </div>`
+    )
+  });
+  document.getElementById("main").innerHTML = timerList.join('');
+</script>
+
+</html>
