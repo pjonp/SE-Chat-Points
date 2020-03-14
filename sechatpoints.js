@@ -48,12 +48,13 @@ let lastUser = ''; //Set-up: ''
 
 client.on('message', (room, user, msg, self) => {
   if(self || user['message-type'] === 'whisper' || room != setup.CHANNEL_NAME[0] ) return;  //Ignore messages from the bot, whisps, and other rooms
+  let isEditor = settings.editors[0].some(i=> i === user.username)
 // --------------
-  if(msg.startsWith(CharGangWars.settings.chatCommand)){
-    CharGangWars.main(client,room,user,msg)
+  if(msg.toLowerCase().startsWith(CharGangWars.settings.chatCommand)){
+    CharGangWars.main(client,room,user,msg,isEditor)
   }
 // --------------
-  if(settings.editors[0].some(i=> i === user.username)) { //If editor check for a command
+  if(isEditor) { //If editor check for a command
     updateSettings.update(client,room,msg);
   }
   if(!settings.enabled[0]) return;  //Check if system is enabled.

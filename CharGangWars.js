@@ -3,6 +3,17 @@ const fs = require('fs'),
   setup = require('./hidden/setup'),
   settings = JSON.parse(fs.readFileSync('./GWsettings.json')),
   gwUsers = JSON.parse(fs.readFileSync('./GWusers.json'));
+
+const io = require("socket.io");
+const server = io.listen(3000);
+let overlaySocket = {  //empty to post
+  "emit": () => {}
+};
+
+server.on('connection', (socket) => {
+  overlaySocket = socket;
+})
+
 //get user database
 let commandCost,
   cooldownStandard = {
@@ -18,11 +29,32 @@ let commandCost,
 
 module.exports = {
   settings: settings,
-  main: async (client, room, user, msg) => {
+  main: async (client, room, user, msg, isEditor) => {
     //delete command message
     client.deletemessage(room, user.id).catch((err) => {
       console.log('delete error' + err)
     });
+    let msgA = msg.toLowerCase().split(' '),
+      res = '';
+    msgA.shift() //remove command from message
+    //enable/disable Commands
+    if (isEditor) {
+      if (msgA[0] === 'enable' || msgA[0] === 'start') {
+        settings.enabled = true;
+        res = 'Gang Wars is enabled!';
+        overlaySocket.emit('enabledCommand', 'Game started');
+        console.log('enabled!')
+      } else if (msgA[0] === 'disable' || msgA[0] === 'stop') {
+        settings.enabled = false;
+        res = 'Gang Wars is disabled';
+      };
+      if (res !== '') {
+        client.say(room, res).catch(err => {
+          console.log('Error sending message to chat: ', err)
+        });
+      };
+    };
+    if (!settings.enabled) return; //enabled check
     //check user is in DB
     let userIndex = gwUsers.findIndex(i => i.userName === user.username);
     if (userIndex < 0) {
@@ -32,10 +64,7 @@ module.exports = {
       });
       return;
     }
-    let gwUser = gwUsers[userIndex],
-      msgA = msg.toLowerCase().split(' '),
-      res = '';
-    msgA.shift() //remove command from message
+    let gwUser = gwUsers[userIndex];
 
     //Calling an event?
     if (msgA[0] === 'event') {
@@ -101,6 +130,11 @@ const CharGangWarsEvent = (msgA, username, gwUser) => {
       console.log('STD COOL OFF')
       cooldownStandard[gwUser.gang] = false;
     }, settings.cooldownStandardGlobal * 60000);
+    overlaySocket.emit('startTimer', {
+      type: 'Event',
+      gang: gwUser.gang,
+      length: (settings.cooldownStandardGlobal * 60 + settings.coolddownOverlayDelay)
+    });
     gwUser.lastStandard = new Date();
     res = `${username} [${gwUser.gang.toUpperCase()} GANG] used: ${res}`
     putToSE(username, settings.pointCostStandard * -1); //remove points from user
@@ -116,6 +150,11 @@ const CharGangWarsSpecial = (msgA, username, gwUser) => {
       console.log('SPECIAL COOL OFF')
       cooldownSpecial[gwUser.gang] = false;
     }, settings.cooldownSpecialGlobal * 60000);
+    overlaySocket.emit('startTimer', {
+      type: 'Special',
+      gang: gwUser.gang,
+      length: (settings.cooldownSpecialGlobal * 60 + settings.coolddownOverlayDelay)
+    });
     gwUser.usedSpecial = true;
     res = `${username} [${gwUser.gang.toUpperCase()} GANG] used: ${res}`
     putToSE(username, settings.pointCostSpecial * -1); //remove points from user
