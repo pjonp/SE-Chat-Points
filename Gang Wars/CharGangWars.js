@@ -2,7 +2,7 @@ const fs = require('fs'),
   fetch = require('node-fetch'), //Webcall
   setup = require('../hidden/setup'),
   settings = JSON.parse(fs.readFileSync('./Gang Wars/GWsettings.json')),
-  gwUsers = JSON.parse(fs.readFileSync('./Gang Wars/GWusers.json')),
+  gwUsers = JSON.parse(fs.readFileSync('./Gang Wars/hidden/GWusers.json')),
   io = require("socket.io"),
   Overlays = io.listen(7566);
 

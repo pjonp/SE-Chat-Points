@@ -4,3 +4,4 @@ hidden/setup.json
 # dependencies
 /node_modules
 Gang Wars/GWusers.json
+Gang Wars/hidden/GWusers.json
