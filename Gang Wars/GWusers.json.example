@@ -1,0 +1,13 @@
+[{
+    "userName": "user1",
+    "gang": "blue",
+    "lastStandard": "",
+    "usedSpecial": false
+  },
+  {
+    "userName": "user2",
+    "gang": "red",
+    "lastStandard": "",
+    "usedSpecial": false
+  }
+]
