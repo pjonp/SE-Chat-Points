@@ -3,7 +3,7 @@ const setup = require('./hidden/setup'); //setup information
 const fetch = require('node-fetch'); //Webcall
 const fs = require('fs'); //File System
 const updateSettings = require('./updateSettings.js');
-const CharGangWars = require('./CharGangWars.js');
+const CharGangWars = require('./Gang Wars/CharGangWars.js');
 let settings = updateSettings.settings;
 
 //Twitch Login Settings
