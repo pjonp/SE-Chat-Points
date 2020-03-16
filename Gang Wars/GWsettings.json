@@ -5,8 +5,8 @@
   "pointCostSpecial": 100,
   "cooldownStandardGlobal": 0.5,
   "cooldownStandardUser": 1,
-  "cooldownSpecialGlobal": 5,
-  "coolddownOverlayDelay": -10,
+  "cooldownSpecialGlobal": 2,
+  "coolddownOverlayDelay": 0,
   "eventStandard": {
     "untargeted": {
       "handsoff": "I must take my hands of the keyboard and mouse for one minute, and cannot influence the game (or process any new events) in any way as soon as this is redeemed. 'Reset' special event will still cancel this.",

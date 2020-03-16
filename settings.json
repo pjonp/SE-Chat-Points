@@ -2,9 +2,9 @@
 "chatCommand": ["!sechatpoints", "changecommand"],
 "enabled": [true, "enabled"],
 "subMode": [false, "subs"],
-"chatInterval": [30, "time"],
+"chatInterval": [120, "time"],
 "chatNumber": [1, "chats"],
-"pointBonus": [1, "bonus"],
+"pointBonus": [500, "bonus"],
 "ignoredUsers": [["username1", "user2_MUST HAVE AT LEAST 2"], ["ignoreadd", "ignoreremove"]],
 "editors": [["pjonp", "user2_MUST HAVE AT LEAST 2"], ["editoradd", "editorremove"]],
 "tellChat": [false, "announce"]
