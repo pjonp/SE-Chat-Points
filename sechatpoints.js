@@ -3,7 +3,8 @@ const setup = require('./hidden/setup'); //setup information
 const fetch = require('node-fetch'); //Webcall
 const fs = require('fs'); //File System
 const updateSettings = require('./updateSettings.js');
-let settings = updateSettings.settings; //settings information
+const CharGangWars = require('./Gang Wars/CharGangWars.js');
+let settings = updateSettings.settings;
 
 //Twitch Login Settings
 const options = {
@@ -16,6 +17,7 @@ const options = {
   channels: setup.CHANNEL_NAME
 };
 const client = new tmi.client(options); // Create a Twitch Client
+
 
 client.connect().then(function(data) { // Connect to Twitch
     console.log('SE Chat Point Bot Online');
@@ -32,7 +34,7 @@ client.connect().then(function(data) { // Connect to Twitch
       ${settings.tellChat[1]} : ${settings.tellChat[0]} //Announce most active person to chat
 
       Edit settings in settings.json file
-      
+
       `)
 }).catch(function(err) {
     console.log('Twitch Connect Error');
@@ -46,8 +48,13 @@ let lastUser = ''; //Set-up: ''
 
 client.on('message', (room, user, msg, self) => {
   if(self || user['message-type'] === 'whisper' || room != setup.CHANNEL_NAME[0] ) return;  //Ignore messages from the bot, whisps, and other rooms
+  let isEditor = settings.editors[0].some(i=> i === user.username)
 // --------------
-  if(settings.editors[0].some(i=> i === user.username)) { //If editor check for a command
+  if(msg.toLowerCase().startsWith(CharGangWars.settings.chatCommand)){
+    CharGangWars.main(client,room,user,msg,isEditor)
+  }
+// --------------
+  if(isEditor) { //If editor check for a command
     updateSettings.update(client,room,msg);
   }
   if(!settings.enabled[0]) return;  //Check if system is enabled.
@@ -75,14 +82,14 @@ function updatePoints(users,room){
 //
   users.forEach(i =>{
     let numOfChats = users.lastIndexOf(i) - users.indexOf(i) + 1
+
+    //for leader info
+    if(numOfChats > leader[1]) {
+      leader = [i, numOfChats]
+      }
+    //......
     if(vaildUsers.indexOf(i) === -1 && numOfChats >= settings.chatNumber[0]) { //if isn't already added + compare # of messages to Settings
       vaildUsers.push(i) //add user if above is true
-
-      //for leader info
-      if(numOfChats > leader[1]) {
-        leader = [i, numOfChats]
-      }
-      //......
     }
   })
 console.log('********** ', rateTesting, ' ***********')
@@ -90,6 +97,10 @@ console.log('Adding points to: ', vaildUsers.length, ' users') //testing
 console.log(vaildUsers) //testing
 console.log('most chats: ', leader[0], ' #: ', leader[1])
 //  client.action(room, `NOT Updating Points...${vaildUsers}`).catch(err=>{console.log('Error: ', err)});
+if(vaildUsers.length < 1){
+  console.log(`No user had more than ${settings.chatNumber[0]} chats`,`...waiting to start new session`)
+  return
+}
 if(settings.tellChat[0]){
   client.say(room, `Fun Fact: in the last ${settings.chatInterval[0] / 60} minutes of chat, ${leader[0]} had the most non-consecutive messages: ${leader[1]}`).catch(err=>{console.log('Error sending Leader message to chat: ', err)});
 }

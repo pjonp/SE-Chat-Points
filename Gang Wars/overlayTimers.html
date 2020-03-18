@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <script src="http://localhost:7566/socket.io/socket.io.js"></script>
+  <script>
+    var socket = io("http://localhost:7566");
+    socket.on("enabledCommand", (message) => {
+      console.log(message)
+    })
+    socket.on("eventClaimed", (data) => {
+      document.getElementById(`sound${data.type}`).play()
+      if(data.type === "Secret") return;
+      let targetNode = document.getElementById(data.gang + data.type),
+        bgImage = targetNode.firstElementChild.style.backgroundImage,
+        innerTxt = targetNode.children[0].innerText,
+        timerDiv = `
+      <div class="svgContainer" style="animation: glowing${data.gang} 5s linear infinite; animation-delay: ${data.length}s;">
+        <svg x="0px" y="0px" viewBox="0 0 100 100">
+          <circle r="45" cx="50" cy="50" style="stroke: ${data.gang}; animation: countdown ${data.length}s linear;"></circle>
+          <text x="50%" y="50%" text-anchor="middle" stroke=${'black'} fill="white" dy=".3em" font-size="40px" font-family="Arial">${innerTxt}</text>
+        </svg>
+      </div>`;
+      targetNode.innerHTML = timerDiv;
+      //can't get this to work in master string; it's removing the /'s in file path???
+      document.getElementById(data.gang + data.type).firstElementChild.style.backgroundImage = bgImage;
+    })
+  </script>
+  <style>
+    #main {
+      margin: 100px auto;
+      width: 240px;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: space-between;
+      justify-content: space-between;
+      error
+      box-shadow: 0 0 100px black, inset 0px 0px 100px 80px black;
+      border-radius: 57px;
+    }
+
+    .svgContainer {
+      width: 100px;
+      height: 100px;
+      margin: 10px;
+      background-size: 60%;
+      background-repeat: no-repeat;
+      background-position: center;
+      border-radius: 50%;
+    }
+
+    svg {
+      display: block;
+      background-color: transparent;
+    }
+
+    svg circle {
+      stroke-dasharray: 283px;
+      stroke-dashoffset: 0px;
+      transform: rotate(-90deg);
+      transform-origin: 50% 50%;
+      stroke-linecap: round;
+      stroke-width: 10px;
+      fill: transparent;
+    }
+
+    @keyframes countdown {
+      from {
+        stroke-dashoffset: 283px;
+      }
+
+      to {
+        stroke-dashoffset: 0px;
+      }
+    }
+
+    @keyframes glowingred {
+      0% {
+        box-shadow: 0 0 0px white,
+          inset 0px 0px 20px 15px red;
+      }
+
+      40% {
+        box-shadow: 0 0 30px white,
+          inset 0px 0px 20px 0px red;
+      }
+
+      60% {
+        box-shadow: 0 0 30px white,
+          inset 0px 0px 20px 0px red;
+      }
+
+      100% {
+        box-shadow: 0 0 -10px white,
+          inset 0px 0px 50px 15px red;
+      }
+    }
+
+    @keyframes glowingblue {
+      0% {
+        box-shadow: 0 0 0px white,
+          inset 0px 0px 20px 15px blue;
+      }
+
+      40% {
+        box-shadow: 0 0 30px white,
+          inset 0px 0px 20px 0px blue;
+      }
+
+      60% {
+        box-shadow: 0 0 30px white,
+          inset 0px 0px 20px 0px blue;
+      }
+
+      100% {
+        box-shadow: 0 0 -10px white,
+          inset 0px 0px 50px 15px blue;
+      }
+    }
+
+    @keyframes glowinggreen {
+      0% {
+        box-shadow: 0 0 0px white,
+          inset 0px 0px 20px 15px green;
+      }
+
+      40% {
+        box-shadow: 0 0 30px white,
+          inset 0px 0px 20px 0px green;
+      }
+
+      60% {
+        box-shadow: 0 0 30px white,
+          inset 0px 0px 20px 0px green;
+      }
+
+      100% {
+        box-shadow: 0 0 -10px white,
+          inset 0px 0px 50px 15px green;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div id='main'>
+    <audio id="soundEvent">
+      <source src="./assets/event.mp3" type="audio/mpeg">
+    </audio>
+    <audio id="soundSpecial">
+      <source src="./assets/special.mp3" type="audio/mpeg">
+    </audio>
+    <audio id="soundSecret">
+      <source src="./assets/secret.mp3" type="audio/mpeg">
+    </audio>
+  </div>
+</body>
+<script>
+  let timerArr = [{
+      name: 'redEvent',
+      color: 'red',
+      backgroundSrc: './assets/red.png'
+    },
+    {
+      name: 'redSpecial',
+      color: 'red',
+      backgroundSrc: './assets/red.png'
+    },
+    {
+      name: 'blueEvent',
+      color: 'blue',
+      backgroundSrc: './assets/blue.png'
+    },
+    {
+      name: 'blueSpecial',
+      color: 'blue',
+      backgroundSrc: './assets/blue.png'
+    },
+    {
+      name: 'greenEvent',
+      color: 'green',
+      backgroundSrc: './assets/green.png'
+    },
+    {
+      name: 'greenSpecial',
+      color: 'green',
+      backgroundSrc: './assets/green.png'
+    }
+  ]
+  let timerList = timerArr.map((i, j) => {
+    let tempEven = j % 2 === 0 ? 'E' : "S"
+    return (
+      `<div id='${i.name}'>
+        <div class="svgContainer" style="background-image: url(${i.backgroundSrc}); animation: glowing${i.color} 5s linear infinite; animation-delay: ${'5s'};">
+          <svg x="0px" y="0px" viewBox="0 0 100 100">
+            <circle r="45" cx="50" cy="50" style="stroke: ${i.color}; animation: countdown ${'5s'} linear;"></circle>
+            <text x="50%" y="50%" text-anchor="middle" stroke=${'black'} fill="white" dy=".3em" font-size="40px" font-family="Arial">${tempEven}</text>
+          </svg>
+        </div>
+      </div>`
+    )
+  });
+  document.getElementById("main").insertAdjacentHTML("beforeend", timerList.join(''));
+</script>
+
+</html>
