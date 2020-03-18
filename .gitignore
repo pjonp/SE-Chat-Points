@@ -3,6 +3,11 @@ hidden/setup.json
 
 # dependencies
 /node_modules
+<<<<<<< Updated upstream
 Gang Wars/GWusers.json
 Gang Wars/hidden/GWusers.json
 Gang Wars/hidden/GWsetup.json
+=======
+Gang Wars/hidden/GWsetup.json
+Gang Wars/hidden/GWusers.json
+>>>>>>> Stashed changes
