@@ -3,38 +3,9 @@
   "enabled": false,
   "pointCostStandard": 50,
   "pointCostSpecial": 100,
-  "cooldownStandardGlobal": 0.5,
-  "cooldownStandardUser": 1,
-  "cooldownSpecialGlobal": 2,
+  "cooldownStandardUser": 1800,
   "coolddownOverlayDelay": 0,
-  "eventStandard": {
-    "untargeted": {
-      "handsoff": "I must take my hands of the keyboard and mouse for one minute, and cannot influence the game (or process any new events) in any way as soon as this is redeemed. 'Reset' special event will still cancel this.",
-      "reinforcements": "Summon 10 new gang members into the prison reception. These come in randomly assigned to a gang, so it may help, or hurt. RNG be with you. This event cannot be used once the total prison population drops below 50 inmates.",
-      "total-lockdown": "Locks down the entire prison for 2 minutes. All doors remain closed.",
-      "free-for-all": "Sets entire prison to 'Free Time' for the rest of the current in-game day.",
-      "mealtime": "All prisoners report to the Canteen for the next 2 in-game hours.",
-      "breaktime": "All guards are removed for 2 in-game hours.",
-      "speed": "Forces Max game speed for 2 real-world minutes."
-    },
-    "targeted": {
-      "yardtime": "Force <Gang> of your choice to report to their nearest Yard.",
-      "lockup": "Change regime of <Gang> to Lockup.Return them to their cells.",
-      "punish": "Up to 10 gangsters & Leader of <Gang> go to solitary for 6 hours.",
-      "arm-up": "A weapon rack is placed in the cell block of <Gang> for 3 hours.",
-      "freetime": "Sets <Gang> to “Free Time” for the rest of the current in-game day.",
-      "guards": "Summon Guards to the <Room> of your choosing. They are removed from the game after five minutes.",
-      "burn": "Spawns a fire in a <Room> of your choosing. The fire department is called after two real-world minutes. Cannot target cell blocks.",
-      "trap": "Deletes all doors for <Room> and replaces them with walls for 5 real-world minutes. They revert to their normal layout after. Cannot target cell blocks."
-    }
-  },
-  "eventSpecial": {
-    "override": "Change the variable used in the most recently claimed event, for example, change 'blue' to 'green' or 'yard' to 'canteen.' Please tell me what to switch when you claim this.The example above demonstrates syntax effectively, but it’s flexible.",
-    "ignored": "Nullifies the most recent event claimed by any team. Cannot be used on 'Reset'",
-    "double": "Varies depending on usage. Doubles the effects, or doubles the duration, of the NEXT claimed event.",
-    "copy": "Varies depending on usage. Allows you to copy, and immediately deploy the event that was most recently claimed with your own <variable> instead. Doesn’t stop the existing event from taking place. Cannot target any special event. If this affects a global event, it will simply repeat it again. Cannot target 'Reset.'",
-    "silence": "Force a TIMEOUT in Twitch chat for <target> user. That person will be timed out for 10 minutes (600 seconds) and will be unable to participate in Gang War directly during that time. A person cannot be targeted more than once per stream by this.",
-    "reset": "Resets and Cancels ALL events that are currently active. ALL FUTURE STANDARD EVENTS WILL BE IGNORED FOR 10 MINUTES!"
-
-  }
+  "emoteRed": "charlieRed",
+  "emoteBlue": "charlieBlue",
+  "emoteGreen": "charlieGreen"
 }

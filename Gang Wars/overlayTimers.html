@@ -8,8 +8,9 @@
     socket.on("enabledCommand", (message) => {
       console.log(message)
     })
-    socket.on("startTimer", (data) => {
+    socket.on("eventClaimed", (data) => {
       document.getElementById(`sound${data.type}`).play()
+      if(data.type === "Secret") return;
       let targetNode = document.getElementById(data.gang + data.type),
         bgImage = targetNode.firstElementChild.style.backgroundImage,
         innerTxt = targetNode.children[0].innerText,
@@ -148,6 +149,9 @@
     </audio>
     <audio id="soundSpecial">
       <source src="./assets/special.mp3" type="audio/mpeg">
+    </audio>
+    <audio id="soundSecret">
+      <source src="./assets/secret.mp3" type="audio/mpeg">
     </audio>
   </div>
 </body>
