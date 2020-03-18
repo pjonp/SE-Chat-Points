@@ -1,6 +1,6 @@
 {
   "name": "se-chat-points",
-  "version": "1.0.0",
+  "version": "2.0.1",
   "description": "Stream Elements Chat Points",
   "main": "index.js",
   "scripts": {
