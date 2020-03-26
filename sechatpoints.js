@@ -3,7 +3,7 @@ const setup = require('./hidden/setup'); //setup information
 const fetch = require('node-fetch'); //Webcall
 const fs = require('fs'); //File System
 const updateSettings = require('./updateSettings.js');
-const CharGangWars = require('./Gang Wars/CharGangWars.js');
+const GangWar = require('./ChatGames/GangWar/GangWar.js');
 let settings = updateSettings.settings;
 
 //Twitch Login Settings
@@ -17,7 +17,6 @@ const options = {
   channels: setup.CHANNEL_NAME
 };
 const client = new tmi.client(options); // Create a Twitch Client
-
 
 client.connect().then(function(data) { // Connect to Twitch
     console.log('SE Chat Point Bot Online');
@@ -34,7 +33,6 @@ client.connect().then(function(data) { // Connect to Twitch
       ${settings.tellChat[1]} : ${settings.tellChat[0]} //Announce most active person to chat
 
       Edit settings in settings.json file
-
       `)
 }).catch(function(err) {
     console.log('Twitch Connect Error');
@@ -50,8 +48,8 @@ client.on('message', (room, user, msg, self) => {
   if(self || user['message-type'] === 'whisper' || room != setup.CHANNEL_NAME[0] ) return;  //Ignore messages from the bot, whisps, and other rooms
   let isEditor = settings.editors[0].some(i=> i === user.username)
 // --------------
-  if(msg.toLowerCase().startsWith(CharGangWars.settings.chatCommand)){
-    CharGangWars.main(client,room,user,msg,isEditor)
+  if(msg.toLowerCase().startsWith(GangWar.settings.chatCommand)){
+    GangWar.main(client,room,user,msg, isEditor || user.mod)
   }
 // --------------
   if(isEditor) { //If editor check for a command
@@ -122,12 +120,17 @@ let putMe = vaildUsers.map(i => { //format data to SE object
 };
 
 function putToSE(url, data) {
-  return fetch(url, {
+  fetch(url, {
     method: 'PUT',
     body: JSON.stringify(data),
     headers: { 'Content-Type': 'application/json',
                'Authorization': `Bearer ${setup.SE_JWTTOKEN}`}, //Stream Elements Secret 'JWT' Token (from dashboard)
   })
-  .then(response => console.log('Successfully Updated Leaderboard'))
-  .catch(error => console.error('Error Updating: ', error))
+  .then(response => {
+    if(!response.ok) {
+        throw new Error();
+    }
+    console.log('Successfully Updated Leaderboard!')
+  })
+  .catch(error => console.error('Error Updating Leaderboard For Chat Bonus!'))
 }

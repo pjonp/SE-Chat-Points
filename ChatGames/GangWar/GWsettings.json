@@ -1,0 +1,16 @@
+{
+  "gameName": "GangWar",
+  "chatCommand": "!gw",
+  "logToChannel": true,
+  "logChannel": "charb0t",
+  "enabled": false,
+  "pointCostStandard": 50,
+  "pointCostSpecial": 100,
+  "cooldownStandardUser": 1200,
+  "coolddownOverlayDelay": 0,
+  "emoteRed": "charlieRed",
+  "emoteBlue": "charlieBlue",
+  "emoteGreen": "charlieGreen",
+  "emoteOrange": "charlieOrange",
+  "emotePurple": "charliePurple"
+}

@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <script src="http://localhost:7566/socket.io/socket.io.js"></script>
+  <script>
+    var socket = io("http://localhost:7566");
+    socket.on("loadTimerData", timerData => {
+      LoadTimers(timerData)
+    });
+    socket.on("eventClaimed", data => {
+      StartATimer(data);
+      return;
+    });
+    socket.emit('overlayLoaded', 'Timers');
+  </script>
+  <style>
+    * {
+      margin: 0px;
+    }
+
+    #main {
+      margin: 100px 0px;
+      width: 480px;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: space-between;
+      justify-content: space-between;
+      box-shadow: 0 0 100px rgba(0, 0, 0, 0.75), inset 0px 0px 100px 150px rgba(0, 0, 0, 0.75);
+      border-radius: 0px 114px 114px 0px;
+    }
+
+    .svgContainer {
+      width: 200px;
+      height: 200px;
+      margin: 20px;
+      background-size: 60%;
+      background-repeat: no-repeat;
+      background-position: center;
+      border-radius: 50%;
+    }
+
+    svg {
+      display: block;
+      background-color: transparent;
+    }
+
+    svg circle {
+      stroke-dasharray: 565px;
+      stroke-dashoffset: 0px;
+      transform: rotate(-90deg);
+      transform-origin: 50% 50%;
+      stroke-linecap: round;
+      stroke-width: 20px;
+      fill: transparent;
+    }
+
+    @keyframes countdown {
+      from {
+        stroke-dashoffset: 565px;
+      }
+
+      to {
+        stroke-dashoffset: 0px;
+      }
+    }
+
+    @keyframes glowingred {
+      0% {
+        box-shadow: 0 0 0px white,
+          inset 0px 0px 50px 40px red;
+      }
+
+      40% {
+        box-shadow: 0 0 60px white,
+          inset 0px 0px 50px 0px red;
+      }
+
+      60% {
+        box-shadow: 0 0 60px white,
+          inset 0px 0px 50px 0px red;
+      }
+
+      100% {
+        box-shadow: 0 0 -10px white,
+          inset 0px 0px 50px 40px red;
+      }
+    }
+
+    @keyframes glowingblue {
+      0% {
+        box-shadow: 0 0 0px white,
+          inset 0px 0px 50px 40px blue;
+      }
+
+      40% {
+        box-shadow: 0 0 60px white,
+          inset 0px 0px 50px 0px blue;
+      }
+
+      60% {
+        box-shadow: 0 0 60px white,
+          inset 0px 0px 50px 0px blue;
+      }
+
+      100% {
+        box-shadow: 0 0 -10px white,
+          inset 0px 0px 50px 40px blue;
+      }
+    }
+
+    @keyframes glowinggreen {
+      0% {
+        box-shadow: 0 0 0px white,
+          inset 0px 0px 50px 40px green;
+      }
+
+      40% {
+        box-shadow: 0 0 60px white,
+          inset 0px 0px 50px 0px green;
+      }
+
+      60% {
+        box-shadow: 0 0 60px white,
+          inset 0px 0px 50px 0px green;
+      }
+
+      100% {
+        box-shadow: 0 0 -10px white,
+          inset 0px 0px 50px 40px green;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <audio id="soundStandard">
+    <source src="../assets/standard.mp3" type="audio/mpeg">
+  </audio>
+  <audio id="soundSpecial">
+    <source src="../assets/special.mp3" type="audio/mpeg">
+  </audio>
+  <audio id="soundSecret">
+    <source src="../assets/secret.mp3" type="audio/mpeg">
+  </audio>
+  <div id='main'>
+  </div>
+</body>
+<script>
+  let timerArr = [{
+      name: 'redStandard',
+      color: 'red',
+      backgroundSrc: '../assets/red.png'
+    },
+    {
+      name: 'redSpecial',
+      color: 'red',
+      backgroundSrc: '../assets/red.png'
+    },
+    {
+      name: 'greenStandard',
+      color: 'green',
+      backgroundSrc: '../assets/green.png'
+    },
+    {
+      name: 'greenSpecial',
+      color: 'green',
+      backgroundSrc: '../assets/green.png'
+    },
+    {
+      name: 'blueStandard',
+      color: 'blue',
+      backgroundSrc: '../assets/blue.png'
+    },
+    {
+      name: 'blueSpecial',
+      color: 'blue',
+      backgroundSrc: '../assets/blue.png'
+    }
+  ]
+  const StartATimer = (data) => {
+    document.getElementById(`sound${data.type}`).play()
+    if (data.type === "Secret") return;
+    let targetNode = document.getElementById(data.team + data.type),
+      bgImage = Math.floor(Math.random() * 20) === 0 ?
+      `https://cultofthepartyparrot.com/parrots/hd/parrot.gif` :
+      timerArr.find(i => i.name === data.team + data.type).backgroundSrc,
+      innerTxt = targetNode.children[0].innerText,
+      timerDiv = `
+    <div class="svgContainer" style="background-image: url(${bgImage}); animation: glowing${data.team} 5s linear infinite; animation-delay: ${data.length}s;">
+      <svg x="0px" y="0px" viewBox="0 0 200 200">
+        <circle r="90" cx="100" cy="100" style="stroke: ${data.team}; animation: countdown ${data.length}s linear;"></circle>
+      </svg>
+    </div>`;
+    targetNode.innerHTML = timerDiv;
+    return;
+  };
+
+
+  const LoadTimers = (currentTime) => {
+    //******* IMPORT FROM CODEPEN *********
+    let timerList = timerArr.map((i, j) => {
+      let animationTime = currentTime[i.name] || 1;
+      return (
+        `<div id='${i.name}'>
+        <div class="svgContainer" style="background-image: url(${i.backgroundSrc}); animation: glowing${i.color} 5s linear infinite; animation-delay: ${animationTime}s;">
+          <svg x="0px" y="0px" viewBox="0 0 200 200">
+            <circle r="90" cx="100" cy="100" style="stroke: ${i.color}; animation: countdown ${animationTime}s linear;"></circle>
+          </svg>
+        </div>
+      </div>`
+      )
+    });
+    document.getElementById("main").innerHTML = timerList.join('');
+  };
+  //LOAD ON START
+  LoadTimers({})
+</script>
+
+</html>
