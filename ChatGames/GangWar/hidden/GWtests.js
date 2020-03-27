@@ -6,16 +6,15 @@ const logTestResult = async (client, room, user, msg, isEditor) => {
   console.log(res.msg);
 };
 // ENABLE DEV MODE BEFORE TESTING!
-
 //  logTestResult('client','room','pjonp','!gw efk', true);
 let testsArr = [
 //start, then attempt to start with non mod
-function () { console.log('#########','Start Game:'), logTestResult('client', 'room', {username: 'pjonp', 'display-name': 'pJonp'}, '!gw start', true) },
-function () { console.log('#########','Expect Fail: not editor:'), logTestResult('client', 'room', {username: 'streamelements', 'display-name': 'streamelements'}, '!gw start', false) },
+function () { console.log('1#########','Start Game:'), logTestResult('client', 'room', {username: 'pjonp', 'display-name': 'pJonp'}, '!gw start', true) },
+function () { console.log('2#########','Expect Fail: not editor:'), logTestResult('client', 'room', {username: 'streamelements', 'display-name': 'streamelements'}, '!gw start', false) },
 //not registered check
-function () { console.log('#########','Expect Fail: not on a team'), logTestResult('client', 'room', {username: 'notpj', 'display-name': 'notPJ'}, '!gw speed', false) },
+function () { console.log('3#########','Expect Fail: not on a team'), logTestResult('client', 'room', {username: 'notpj', 'display-name': 'notPJ'}, '!gw speed', false) },
 //standard event checks
-function () { console.log('#########','Start Green Std:'), logTestResult('client', 'room', {username: 'pjonp', 'display-name': 'pjonp'}, '!gw speed', false) },
+function () { console.log('4#########','Start Green Std:'), logTestResult('client', 'room', {username: 'pjonp', 'display-name': 'pjonp'}, '!gw speed', false) },
 function () { console.log('#########','Expect Fail: Green on Cooldown:'), logTestResult('client', 'room', {username: 'pjonp', 'display-name': 'pjonp'}, '!gw speed', false) },
 function () { console.log('#########','Expect Fail: STD <target> Required:'), logTestResult('client', 'room', {username: 'streamelements', 'display-name': 'streamelements'}, '!gw yardtime', false) },
 function () { console.log('#########','Start Red Std:'), logTestResult('client', 'room', {username: 'streamelements', 'display-name': 'streamelements'}, '!gw yardtime green', false) },
@@ -51,8 +50,32 @@ function () { console.log('#########','Expect Fail: <= 50:'), logTestResult('cli
 function () { console.log('#########','Set population to 51:'), logTestResult('client', 'room', {username: 'pjonp', 'display-name': 'pjonp'}, '!gw pop 51', true) },
 function () { console.log('#########','Expect Pass: pop > 50:'), logTestResult('client', 'room', {username: 'pjonp', 'display-name': 'pjonp'}, '!gw reinforcements', true) },
 function () { console.log('#########','Expect Fail: non mod startgame:'), logTestResult('client', 'room', {username: 'streamelements', 'display-name': 'streamelements'}, '!gw newgame', false) },
-
-
+//test toggle eliminated
+function () { console.log('#########','Expect Fail: need target team:'), logTestResult('client', 'room', {username: 'pjonp', 'display-name': 'pjonp'}, '!gw toggleEliminated', true) },
+function () { console.log('#########','Expect Pass: toggle red:'), logTestResult('client', 'room', {username: 'pjonp', 'display-name': 'pjonp'}, '!gw toggleEliminated ReD', true) },
+function () { console.log('#########','Expect Pass: toggle blue:'), logTestResult('client', 'room', {username: 'pjonp', 'display-name': 'pjonp'}, '!gw toggleEliminated bLUE', true) },
+function () { console.log('#########','Expect Pass: use Green std:'), logTestResult('client', 'room', {username: 'pjonp', 'display-name': 'pjonp'}, '!gw speed', false) },
+function () { console.log('#########','Expect Pass: toggle green:'), logTestResult('client', 'room', {username: 'pjonp', 'display-name': 'pjonp'}, '!gw toggleEliminated grEEn', true) },
+//test std commands
+function () { console.log('#########','Expect Fail: Green eliminated std:'), logTestResult('client', 'room', {username: 'pjonp', 'display-name': 'pjonp'}, '!gw speed', false) },
+function () { console.log('#########','Expect Fail: Red eliminated std:'), logTestResult('client', 'room', {username: 'streamelements', 'display-name': 'streamelements'}, '!gw yardtime green', false) },
+function () { console.log('#########','Expect Fail: Blue eliminated std:'), logTestResult('client', 'room', {username: 'pj_not_a_bot', 'display-name': 'pj_not_a_bot'}, '!gw speed', false) },
+//test special commands
+function () { console.log('#########','Expect Fail: Green eliminated special:'), logTestResult('client', 'room', {username: 'pjonp', 'display-name': 'pjonp'}, '!gw reinforcements', false) },
+function () { console.log('#########','Expect Fail: Red eliminated special:'), logTestResult('client', 'room', {username: 'streamelements', 'display-name': 'streamelements'}, '!gw reinforcements', false) },
+function () { console.log('#########','Expect Fail: Blue eliminated special:'), logTestResult('client', 'room', {username: 'pj_not_a_bot', 'display-name': 'pj_not_a_bot'}, '!gw reinforcements', false) },
+//toggle back
+function () { console.log('#########','Expect Pass: toggle red:'), logTestResult('client', 'room', {username: 'pjonp', 'display-name': 'pjonp'}, '!gw toggleEliminated ReD', true) },
+function () { console.log('#########','Expect Pass: toggle blue:'), logTestResult('client', 'room', {username: 'pjonp', 'display-name': 'pjonp'}, '!gw toggleEliminated bLUE', true) },
+function () { console.log('#########','Expect Pass: toggle green:'), logTestResult('client', 'room', {username: 'pjonp', 'display-name': 'pjonp'}, '!gw toggleEliminated grEEn', true) },
+//test std commands
+function () { console.log('#########','Expect Fail: Green already used:'), logTestResult('client', 'room', {username: 'pjonp', 'display-name': 'pjonp'}, '!gw speed', false) },
+function () { console.log('#########','Expect Pass: Red std:'), logTestResult('client', 'room', {username: 'streamelements', 'display-name': 'streamelements'}, '!gw yardtime green', false) },
+function () { console.log('#########','Expect Pass: Blue std:'), logTestResult('client', 'room', {username: 'pj_not_a_bot', 'display-name': 'pj_not_a_bot'}, '!gw speed', false) },
+//test special commands
+function () { console.log('#########','Expect Fail: Green already used special:'), logTestResult('client', 'room', {username: 'pjonp', 'display-name': 'pjonp'}, '!gw reinforcements', false) },
+function () { console.log('#########','Expect Pass: Red special:'), logTestResult('client', 'room', {username: 'streamelements', 'display-name': 'streamelements'}, '!gw reinforcements', false) },
+function () { console.log('#########','Expect Pass: Blue special:'), logTestResult('client', 'room', {username: 'pj_not_a_bot', 'display-name': 'pj_not_a_bot'}, '!gw reinforcements', false) },
 
 ]
 

@@ -5,7 +5,6 @@ const fs = require('fs'),
   io = require("socket.io"),
   Overlays = io.listen(7566);
 
-
 //##### GAME SET UP
 const settings = JSON.parse(fs.readFileSync(path.resolve(__dirname, './GWsettings.json'))),
   gameSetup = JSON.parse(fs.readFileSync(path.resolve(__dirname, './hidden/GWsetup.json'))),
@@ -16,6 +15,7 @@ let devMode = false;
 //!!!!!!!!!!!!!!!! DEVMODE
 
 let gameName = settings.gameName
+
 
 if (devMode) {
   console.log('########## DEV MODE ENABLED ##########');
@@ -36,6 +36,13 @@ let gameUsers = [], //populate on game start: loadGSheetData()
       purple: false,
     },
     special: {
+      red: false,
+      blue: false,
+      green: false,
+      orange: false,
+      purple: false,
+    },
+    eliminated: {
       red: false,
       blue: false,
       green: false,
@@ -82,6 +89,8 @@ module.exports = {
         res = toggleSpecial(msgA[1]);
       } else if (msgA[0] === 'pop' || msgA[0] === 'population') {
         res = setGamePopulation(msgA[1]);
+      } else if (msgA[0] === 'toggleeliminated') {
+        res = toggleEliminated(msgA[1]);
       } else if (msgA[0] === 'newgame' || msgA[0] === 'reload') {
         console.log("New Game Started")
         settings.enabled = true;
@@ -96,6 +105,13 @@ module.exports = {
             purple: false,
           },
           special: {
+            red: false,
+            blue: false,
+            green: false,
+            orange: false,
+            purple: false,
+          },
+          eliminated: {
             red: false,
             blue: false,
             green: false,
@@ -137,6 +153,13 @@ module.exports = {
         "enabled": true,
         "type": 'whisper',
         "msg": `${msgA[0]} requires a target!`
+      };
+    } else if (teamCooldowns.eliminated[gameUser.team]) {
+      res = {
+        "log": false,
+        "enabled": true,
+        "type": 'whisper',
+        "msg": `${getTeamEmote(gameUser.team)} has been eliminated!`
       };
     } else if (gameEvent.numLimit >= numberLimit) {
       res = {
@@ -291,11 +314,13 @@ const GameSpecialEvent = async (msgA, username, gameUser, gameEvent) => {
       });
       if (gameEvent.name === 'reset') {
         Object.entries(teamCooldowns).forEach(([key, value]) => {
-          Object.entries(value).forEach(([team, teamTimer]) => {
-            teamCooldowns[key][team] = setTimeout(() => {
-              teamCooldowns[key][team] = false;
-            }, gameEvent.cooldown * 1000);
-          });
+          if (key != 'eliminated') {
+            Object.entries(value).forEach(([team, teamTimer]) => {
+              teamCooldowns[key][team] = setTimeout(() => {
+                teamCooldowns[key][team] = false;
+              }, gameEvent.cooldown * 1000);
+            });
+          };
         });
         refreshOverlays(gameEvent.cooldown);
       } else {
@@ -510,10 +535,8 @@ const toggleSpecial = (target) => {
   };
   return res;
 };
-
 const setGamePopulation = (num) => {
   let res;
-
   num = parseInt(num);
   if (num) {
     res = {
@@ -533,13 +556,36 @@ const setGamePopulation = (num) => {
   };
   return res;
 };
+const toggleEliminated = (team) => {
+  if (typeof teamCooldowns.eliminated[team] === 'boolean') {
+    teamCooldowns.eliminated[team] = teamCooldowns.eliminated[team] ? false : true;
+    refreshOverlays();
+    res = {
+      "log": true,
+      "enabled": true,
+      "type": 'whisper',
+      "msg": `${team}'s eliminated status has been set to: ${teamCooldowns.eliminated[team]}`
+    };
+  } else {
+    res = {
+      "log": false,
+      "enabled": true,
+      "type": 'whisper',
+      "msg": `${settings.chatCommand} toggleeliminated <team> Make sure 2nd argument is a team [red,blue,green]`
+    };
+  };
+  return res;
+};
 
 const refreshOverlays = (time) => {
   Overlays.emit('loadTimerData', {
+    redEliminated: teamCooldowns.eliminated.red,
     redStandard: time || Math.ceil((teamCooldowns.standard.red._idleStart + teamCooldowns.standard.red._idleTimeout) / 1000 - process.uptime()),
     redSpecial: time || Math.ceil((teamCooldowns.special.red._idleStart + teamCooldowns.special.red._idleTimeout) / 1000 - process.uptime()),
+    greenEliminated: teamCooldowns.eliminated.green,
     greenStandard: time || Math.ceil((teamCooldowns.standard.green._idleStart + teamCooldowns.standard.green._idleTimeout) / 1000 - process.uptime()),
     greenSpecial: time || Math.ceil((teamCooldowns.special.green._idleStart + teamCooldowns.special.green._idleTimeout) / 1000 - process.uptime()),
+    blueEliminated: teamCooldowns.eliminated.blue,
     blueStandard: time || Math.ceil((teamCooldowns.standard.blue._idleStart + teamCooldowns.standard.blue._idleTimeout) / 1000 - process.uptime()),
     blueSpecial: time || Math.ceil((teamCooldowns.special.blue._idleStart + teamCooldowns.special.blue._idleTimeout) / 1000 - process.uptime()),
   })
