@@ -9,7 +9,7 @@
   "author": "PJP",
   "license": "ISC",
   "dependencies": {
-    "node-fetch": "^2.6.0",
+    "node-fetch": "^2.6.7",
     "socket.io": "^2.3.0",
     "tmi.js": "^1.5.0"
   },
